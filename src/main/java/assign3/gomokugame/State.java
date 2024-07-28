@@ -1,11 +1,13 @@
 package assign3.gomokugame;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.Arrays;
 
 public class State implements Serializable {
+    @Serial
     private static final long serialVersionUID = 1L;
-    private int[][] board;
+    private final int[][] board;
 
     public State(int[][] board) {
         this.board = deepCopy(board);

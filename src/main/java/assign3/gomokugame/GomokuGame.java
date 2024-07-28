@@ -17,7 +17,7 @@ public class GomokuGame extends Application {
     private final Circle[][] board = new Circle[SIZE][SIZE];
     private Label messageLabel;
     private QLearningAI whiteAI;
-    private int[][] gameState = new int[SIZE][SIZE];
+    private final int[][] gameState = new int[SIZE][SIZE];
 
     public static void main(String[] args) {
         GomokuLearning learningProcess = new GomokuLearning();
@@ -47,6 +47,7 @@ public class GomokuGame extends Application {
         primaryStage.show();
     }
 
+    // Create the game grid
     private GridPane createGrid() {
         GridPane gridPane = new GridPane();
 
@@ -67,13 +68,15 @@ public class GomokuGame extends Application {
         return gridPane;
     }
 
+    // Place a chip on the board
     private void placeChip(GridPane gridPane, int row, int col, boolean isPlayer) {
         if (board[row][col] == null && !messageLabel.isVisible()) {
-            Circle chip = new Circle(TILE_SIZE / 2 - 10, isPlayer ? Color.BLACK : Color.WHITE);
+            Circle chip = new Circle((double) TILE_SIZE / 2, isPlayer ? Color.BLACK : Color.WHITE);
             board[row][col] = chip;
             gameState[row][col] = isPlayer ? 1 : -1;
             gridPane.add(chip, col, row);
 
+            // Check for a win or a tie
             if (checkWin(row, col)) {
                 String winner = isPlayer ? "Black" : "White";
                 messageLabel.setText(winner + " wins!");
@@ -89,12 +92,14 @@ public class GomokuGame extends Application {
         }
     }
 
+    // AI makes a move
     private void aiMove(GridPane gridPane) {
         State currentState = new State(gameState);
         int[] action = whiteAI.chooseAction(currentState);
         placeChip(gridPane, action[0], action[1], false);
     }
 
+    // Check if the move leads to a win
     private boolean checkWin(int row, int col) {
         return checkDirection(row, col, 1, 0) || // Horizontal
                 checkDirection(row, col, 0, 1) || // Vertical
@@ -102,6 +107,7 @@ public class GomokuGame extends Application {
                 checkDirection(row, col, 1, -1); // Diagonal down-left
     }
 
+    // Check the direction for potential win
     private boolean checkDirection(int row, int col, int dRow, int dCol) {
         int count = 1;
         count += countChips(row, col, dRow, dCol);
@@ -109,6 +115,7 @@ public class GomokuGame extends Application {
         return count >= 5;
     }
 
+    // Count chips in the given direction
     private int countChips(int row, int col, int dRow, int dCol) {
         int r = row + dRow;
         int c = col + dCol;
@@ -121,6 +128,7 @@ public class GomokuGame extends Application {
         return count;
     }
 
+    // Check if the board is full
     private boolean isBoardFull() {
         for (int row = 0; row < SIZE; row++) {
             for (int col = 0; col < SIZE; col++) {
@@ -132,6 +140,7 @@ public class GomokuGame extends Application {
         return true;
     }
 
+    // Save Q-tables
     private void saveQTables() {
         whiteAI.saveQTable("whiteAI_qtable.ser");
     }
